@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"github.com/andyklimczak/gonks/pkg"
+)
 
 func main() {
-	fmt.Println("gonks")
+	c := pkg.Controller{}
+	c.Handle()
 }
