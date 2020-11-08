@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
+	"time"
 )
 
 type Stock struct{
@@ -22,22 +24,39 @@ type StockResponse struct {
 }
 
 func (m Stock) fetch(stockSymbols []string, apiKey string) (stocks []Stock) {
+	ch := make(chan Stock, len(stockSymbols))
+
 	for _, stockSymbol := range stockSymbols {
-		url := fmt.Sprintf("https://finnhub.io/api/v1/quote?symbol=%s&token=%s", stockSymbol, apiKey)
-		resp, err := http.Get(url)
-		defer resp.Body.Close()
-		if err != nil {
-			panic(err)
-		}
-		var s = new(StockResponse)
-		err = json.NewDecoder(resp.Body).Decode(&s)
-		tmp := Stock{
-			stockSymbol,
-			s.Close,
-			s.Close - s.PreviousClose,
-			(s.Close - s.PreviousClose) / s.PreviousClose,
-		}
-		stocks = append(stocks, tmp)
+		go func(stockSymbol string) {
+			url := fmt.Sprintf("https://finnhub.io/api/v1/quote?symbol=%s&token=%s", stockSymbol, apiKey)
+			resp, err := http.Get(url)
+			defer resp.Body.Close()
+			if err != nil {
+				panic(err)
+			}
+			var s = new(StockResponse)
+			err = json.NewDecoder(resp.Body).Decode(&s)
+			tmp := Stock{
+				stockSymbol,
+				s.Close,
+				s.Close - s.PreviousClose,
+				(s.Close - s.PreviousClose) / s.PreviousClose,
+			}
+			ch <- tmp
+		}(stockSymbol)
 	}
-	return
+
+	for {
+		select {
+		case s := <-ch:
+			stocks = append(stocks, s)
+			if len(stockSymbols) == len(stocks) {
+				sort.Slice(stocks, func(i, j int) bool {
+					return stocks[i].Price > stocks[j].Price
+				})
+				return
+			}
+		case <-time.After(100 * time.Millisecond):
+		}
+	}
 }
