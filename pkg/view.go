@@ -34,7 +34,7 @@ func (v View) Display(stocks []Stock) {
 		},
 		{
 			Name:        "% Change",
-			Transformer: text.NewNumberTransformer("%.4f%%"),
+			Transformer: text.NewNumberTransformer("%.2f%%"),
 			Align: text.AlignRight,
 			WidthMin: 20,
 		},

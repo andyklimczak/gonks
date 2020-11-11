@@ -40,7 +40,7 @@ func (m Stock) fetch(stockSymbols []string, apiKey string) (stocks []Stock) {
 				stockSymbol,
 				s.Close,
 				s.Close - s.PreviousClose,
-				(s.Close - s.PreviousClose) / s.PreviousClose,
+				((s.Close - s.PreviousClose) / s.PreviousClose) * 100,
 			}
 			ch <- tmp
 		}(stockSymbol)
