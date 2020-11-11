@@ -6,9 +6,9 @@ Gets stock data from [finnhub](http://finnhub.io)
 
 ```
 SYMBOL                 PRICE              $ CHANGE              % CHANGE
-AAPL                  118.69                 -0.34              -0.0029%
-DIS                   127.46                  0.50               0.0039%
-SPY                   350.16                 -0.08              -0.0002%
+AAPL                  118.69                 -0.34              -0.29%
+DIS                   127.46                  0.50               0.39%
+SPY                   350.16                 -0.08              -0.02%
 ```
 
 ## Example config
